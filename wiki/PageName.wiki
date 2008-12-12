@@ -5,10 +5,7 @@ This project is for QA who need to test network deivces, like
 router , firewall, switch , proxy , WAN Optimize device. 
 
 
+= Script Requirement =
+[PythonScript Python Script]
 
-= Details =
-
-Will update detail later:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+[WindowsScript Windows Script]
