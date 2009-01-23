@@ -1,0 +1,11 @@
+
+# Package and Version 
+
+httpd-2.2.10-2.i386
+httpd-tools-2.2.10-2.i386
+openssl-0.9.8g-11.fc10.i686
+mod_python-3.3.1-8.i386
+mod_nss-1.0.7-10.fc10.i386
+nss.i386 : Network Security Services			# certutil , use by apache mod-nss init
+nss-tools.i386 : Tools for the Network Security Services
+

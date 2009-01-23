@@ -1,0 +1,18 @@
+## 
+Generate a Private key 
+
+$ openssl genrsa -des3 -out devqa_root.key 1024
+$ openssl rsa -in devqa_root.key -out devqa_root.pem
+
+
+
+##
+Generate CSR (Certificate Signing Request)
+openssl req -new -key devqa_root.key -out webserver.csr
+
+
+##
+Generating a SElf-Signed Certificate
+
+$ openssl x509 -req -days 60 -in webserver.csr -signkey devqa_root.key -out webserver.crt
+

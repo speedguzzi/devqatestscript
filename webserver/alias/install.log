@@ -1,0 +1,37 @@
+/usr/sbin/gencert: line 42: host: command not found
+
+#####################################################################
+Generating new server certificate and key database.
+#####################################################################
+/usr/sbin/gencert: line 91: /usr/bin/certutil: No such file or directory
+
+#####################################################################
+Generating self-signed client CA certificate
+#####################################################################
+/usr/sbin/gencert: line 103: /usr/bin/certutil: No such file or directory
+
+#####################################################################
+Generating user certificate for "alpha".
+#####################################################################
+/usr/sbin/gencert: line 125: /usr/bin/certutil: No such file or directory
+
+#####################################################################
+Generating server certificate request
+#####################################################################
+/usr/sbin/gencert: line 142: /usr/bin/certutil: No such file or directory
+
+#####################################################################
+Generating server certificate
+#####################################################################
+/usr/sbin/gencert: line 155: /usr/bin/certutil: No such file or directory
+rm: cannot remove `/etc/httpd/alias/tmpcertreq': No such file or directory
+
+#####################################################################
+Importing server certificate into server cert DB
+#####################################################################
+/usr/sbin/gencert: line 171: /usr/bin/certutil: No such file or directory
+rm: cannot remove `/etc/httpd/alias/tmpcert.der': No such file or directory
+
+#####################################################################
+Cleaning up
+#####################################################################
