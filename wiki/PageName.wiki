@@ -9,3 +9,5 @@ router , firewall, switch , proxy , WAN Optimize device.
 [PythonScript Python Script]
 
 [WindowsScript Windows Script]
+
+[TestPage Learn Google wiki(moin) wiki syntax]
