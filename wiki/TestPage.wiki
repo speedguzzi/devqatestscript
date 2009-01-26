@@ -4,7 +4,8 @@
 == second ==
 
 
-{{{ def hell():
-    print "Hello"
+{{{
+    def hell():
+        print "Hello"
 
 }}}}
