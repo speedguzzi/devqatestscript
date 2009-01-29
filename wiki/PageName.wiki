@@ -8,6 +8,9 @@ router , firewall, switch , proxy , WAN Optimize device.
 == SSL ===
 [ModSSL_Examples mod_ssl Configure examples]
 
+= AutoTest =
+[FeatureAutoTest FOS Feature Auto Test Bed]
+
 = Script Requirement =
 [PythonScript Python Script]
 
