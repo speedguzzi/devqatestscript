@@ -1,0 +1,15 @@
+Test Step : 
+
+1) Create and "exec upd-vdom-license 250"
+2) Create Vdom home to connect Test pc (client , server)
+Loop 1~250; step 3 ~12
+3) Create test vdom name test{i}
+4) Create vlan interface for test{i}  
+5) Create vdom-link ; 0 for home , 1 for test{i}
+6) Config Static Routing in vdom home , test{i}
+7) Create VIP in vdom home, and FW policy
+8) Create wad Peer in test{i}
+9) Create wad rule [http|smb|tcp] manual mode 
+10) Create FW policy in test{i} 
+11) From PC init http/ftp/smb traffic 
+12) collect FGT L/R CPU/Memory/WAD daemon information 
