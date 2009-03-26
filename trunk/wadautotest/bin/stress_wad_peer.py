@@ -2,7 +2,7 @@
 
 
 import os, sys, time
-
+from devicecontrol import DC
 class StressWAD ():
     def __init__ (self):
         self.FGT_Left = "10.10.0.16"
@@ -282,24 +282,31 @@ class StressWAD ():
         self.FGT_Right_Cli.append  ("end")
         self.FGT_Left_Cli.append  ("end")
         return 0
+    def GenAll (self,i):
+        self.GenVdom(i)
+        self.GenVlan(i)
+        self.GenVdomLink(i)
+        self.GenStaticRoute (i)
+        self.GenVIP(i)
+        self.GenFWPolicy(i)
+        self.GenWadCfg(i)
+if __name__ == '__main__' :
+    a = StressWAD()
+    fgt_left    = DC (a.FGT_Left,  "fgt")
+    fgt_left.SetDebugLevel()
+    fgt_right   = DC (a.FGT_Right, "fgt")
+    fgt_right.SetDebugLevel()
+    fgt_left.DCTelnetDevice_FGT ()
+    fgt_right.DCTelnetDevice_FGT ()
+    a.GenAll(1)
+    fgt_left.DCUploadCFG_FGT (a.FGT_Left_Cli)
+    fgt_right.DCUploadCFG_FGT (a.FGT_Right_Cli)
     
-
-
-
-v=199
-a=StressWAD()
-a.GenVdom(v)
-a.GenVlan(v)
-a.GenVdomLink(v)
-a.GenStaticRoute (v)
-a.GenVIP(v)
-a.GenFWPolicy(v)
-a.GenWadCfg(v)
-
-print '=' * 40
-for i in range(len(a.FGT_Left_Cli)) :
-    print a.FGT_Left_Cli[int(i)]
-print '=' * 40
-for i in range (len(a.FGT_Right_Cli)) :
-    print a.FGT_Right_Cli[int(i)]
+#    a.GenAll(11)
+#    print '*' * 70
+#    for i in range(len(a.FGT_Left_Cli)) :
+#        print a.FGT_Left_Cli[int(i)]
+#    print '=' * 70
+#    for i in range (len(a.FGT_Right_Cli)) :
+#        print a.FGT_Right_Cli[int(i)]
 
