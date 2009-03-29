@@ -38,7 +38,7 @@ class DC ():
         self.DevicePowerControl = "" # Now only support DLT uu.pl 4.1 version
         self.Err = 0
         self.DeviceAccessMode = ""  # support Telnet, TS : Terminal Server
-        self.DeviceUsername = ""
+        self.DeviceUsername = "admin"
         self.DevicePassword = ""
         self.DeviceName = ""        # Hostname Linux,Windows, FGT, Router
         self.DeviceSerialNumber = "" # FGT, Serial number, 
@@ -48,7 +48,7 @@ class DC ():
             
     def DebPrint (self, MSG,DebugLevel=5):
         if (DebugLevel > self.DEBUG) or (self.DEBUG == -1):
-            print time.ctime(),":",sys._getframe(1).f_code.co_name,": ",MSG
+            print time.ctime(),":",str (sys._getframe(1).f_code.co_name)+":"+str (sys._getframe(1).f_lineno),"  ",MSG
     def SetDebugLevel (self, Level=-1 ):
         #-1 is mean turn all debug 
         self.DEBUG = Level
@@ -67,16 +67,18 @@ class DC ():
         return 0
     
     def DCTelnetDevice_FGT(self) :
-        IP = self.DeviceIP
-        Port = self.DeviceMgmtPort
-        self.DebPrint( "Connect to FGT "+IP)
+        self.DebPrint( "Connect to FGT "+self.DeviceIP)
         try :
-            T=telnetlib.Telnet(IP,Port)
-            L=T.read_until("login: ",15)
-            T.write (self.DeviceUsername + "\n")
-            L=T.read_until("assword: ",15)
-            T.write(self.DevicePassword + "\r\n")
-            self.DebPrint (L)
+            self.Device_T=telnetlib.Telnet(self.DeviceIP,self.DeviceMgmtPort)
+            print self.DeviceIP,self.DeviceMgmtPort
+            L=self.Device_T.read_until("login: ",15)
+            print "a: ",L
+            self.Device_T.write (self.DeviceUsername + "\n")
+            print self.DeviceUsername
+            L=self.Device_T.read_until("assword: ",15)
+            print "b: ",L
+            self.Device_T.write(self.DevicePassword + "\r\n")
+            self.DebPrint (L,1)
         except socket.error :
             self.Err=2 # error
             self.DebPrint( "check IP and telnet service\n",1)
@@ -85,7 +87,6 @@ class DC ():
             self.Err=1 # close by peer
             self.DebPrint( "Server close telnet port\n",1)
             return self.Err
-        self.Device_T = T
         return self.Err
  
     
@@ -229,17 +230,16 @@ class DC ():
         return T
     def DCUploadCFG_FGT(self,CLI,Prompt="#"):
         self.Err=0
-        T = self.Device_T
-        self.DebPrint ( T.host+" "+CLI[0])
-        T = self.Device_T
-        if not T.sock_avail() :
+        self.DebPrint ( self.Device_T.host+" "+CLI[0])
+        if not self.Device_T.sock_avail() :
             self.DebPrint ("It's not a live Telnet Session, May timeouted.")
             self.DCTelnetDevice_FGT()
         try :
             for C in CLI[:] :
-                T.write (C+"\n")
-                L=T.read_until (Prompt,15)
-                self.DebPrint (L,1)
+                self.Device_T.write (C+"\n")
+                #self.DebPrint (C ,1)
+                L = self.Device_T.read_until (Prompt,15)
+                self.DebPrint (L ,1),
         except socket.error, socket.connect :
             self.Err=1
             self.DebPrint ("Connect Error")

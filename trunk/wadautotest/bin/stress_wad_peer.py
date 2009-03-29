@@ -117,8 +117,8 @@ class StressWAD ():
         self.FGT_Right_Cli.append ("edit 0")
         self.FGT_Left_Cli.append  ("set device h_t"+str(i)+"_1")
         self.FGT_Right_Cli.append ("set device h_t"+str(i)+"_1")
-        self.FGT_Left_Cli.append  ("set gateway 50.0.0.2")
-        self.FGT_Right_Cli.append ("set gateway 50.0.0.1")
+        self.FGT_Left_Cli.append  ("set gateway 50.0."+str(i)+".2")
+        self.FGT_Right_Cli.append ("set gateway 50.0."+str(i)+".1")
         self.FGT_Left_Cli.append  ("end")         #leave the static routing configure 
         self.FGT_Right_Cli.append ("end")         #leave the static routing configure
         self.FGT_Left_Cli.append  ("end")     #Leave vdom test{i}
@@ -178,6 +178,24 @@ class StressWAD ():
         self.FGT_Left_Cli.append  ("config vdom")
         self.FGT_Right_Cli.append  ("edit test"+str(i))
         self.FGT_Left_Cli.append  ("edit test"+str(i))
+        # Befire create firewall policy , Remove all default PP
+        # scan , strict , web, unfiltered
+               
+        self.FGT_Right_Cli.append  ("config fire profile")
+        self.FGT_Left_Cli.append  ("config fire profile")
+        self.FGT_Right_Cli.append  ("del web")
+        self.FGT_Left_Cli.append  ("sel web")
+        self.FGT_Right_Cli.append  ('del scan')
+        self.FGT_Left_Cli.append  ('del scan')
+        self.FGT_Right_Cli.append  ('del strict' )
+        self.FGT_Left_Cli.append  ('del strict' )
+        self.FGT_Right_Cli.append  ('del unfiltered')
+        self.FGT_Left_Cli.append  ('del unfiltered')
+        self.FGT_Right_Cli.append  ('end')
+        self.FGT_Left_Cli.append  ('end')
+
+        
+        
         self.FGT_Right_Cli.append  ("config fire policy")
         self.FGT_Left_Cli.append  ("config fire policy")
         self.FGT_Right_Cli.append  ("edit 0")
@@ -283,6 +301,8 @@ class StressWAD ():
         self.FGT_Left_Cli.append  ("end")
         return 0
     def GenAll (self,i):
+        self.FGT_Left_Cli = []
+        self.FGT_Right_Cli = []
         self.GenVdom(i)
         self.GenVlan(i)
         self.GenVdomLink(i)
@@ -293,20 +313,27 @@ class StressWAD ():
 if __name__ == '__main__' :
     a = StressWAD()
     fgt_left    = DC (a.FGT_Left,  "fgt")
-    fgt_left.SetDebugLevel()
+    #fgt_left.SetDebugLevel()
     fgt_right   = DC (a.FGT_Right, "fgt")
-    fgt_right.SetDebugLevel()
+    #fgt_right.SetDebugLevel()
     fgt_left.DCTelnetDevice_FGT ()
     fgt_right.DCTelnetDevice_FGT ()
-    a.GenAll(1)
-    fgt_left.DCUploadCFG_FGT (a.FGT_Left_Cli)
-    fgt_right.DCUploadCFG_FGT (a.FGT_Right_Cli)
-    
+    print "left ", fgt_left.Err
+    #fgt_right.DCTelnetDevice_FGT ()
+    #print "right", fgt_right.Err 
+    for i in range (1 ,215) :
+        a.GenAll(i)
+        print "#" * 10, "Generate Config for FGT" , i
+        for i in a.FGT_Left_Cli[:] : print i
+        fgt_left.DCUploadCFG_FGT (a.FGT_Left_Cli)
+        fgt_right.DCUploadCFG_FGT (a.FGT_Right_Cli)
+        #print '=' * 70
+        #for i in range(len(a.FGT_Left_Cli)) :
+        #    print a.FGT_Left_Cli[int(i)]
+        #print '=' * 70
+        #for i in range (len(a.FGT_Right_Cli)) :
+        #    print a.FGT_Right_Cli[int(i)]
+        #fgt_left.DCUploadCFG_FGT(a.FGT_Left_Cli)
 #    a.GenAll(11)
-#    print '*' * 70
-#    for i in range(len(a.FGT_Left_Cli)) :
-#        print a.FGT_Left_Cli[int(i)]
-#    print '=' * 70
-#    for i in range (len(a.FGT_Right_Cli)) :
-#        print a.FGT_Right_Cli[int(i)]
+
 
