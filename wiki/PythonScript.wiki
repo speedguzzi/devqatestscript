@@ -1,8 +1,10 @@
 #summary One-sentence summary of this page.
 
 = Script Requirement List =
-|| * Short Descript* || *Description* ||
-|| Monitor FOS 4.0 Crash Info || Monitor by telnet/ssh , check every 5 mins ||
+|| * Short Descript* || *Description* || *Status* ||
+|| Monitor FOS 4.0 Crash Info || Monitor by telnet/ssh , check every 5 mins || ||
+|| Web Proxy Test Package || Phase 1 : Check-list || not start ||
+
 
 
 = Details =
