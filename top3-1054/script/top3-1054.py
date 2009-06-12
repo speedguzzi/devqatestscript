@@ -104,7 +104,6 @@ class StressWAD ():
         # This policy is for web-mode ssl vpn 
         self.FGT_Left_Cli.append  ("config vdom")
         self.FGT_Left_Cli.append  ("edit v"+str(i))
-        # Befire create firewall policy , Remove all default PP
         self.FGT_Left_Cli.append ("config fire policy")
         self.FGT_Left_Cli.append  ("edit 0")
         self.FGT_Left_Cli.append  ('set srcintf '+self.FGT_Left_ClientInterface+"_v"+str(i))
@@ -147,6 +146,7 @@ class StressWAD ():
         # Below is user-group link to ssl-vpn
         self.FGT_Left_Cli.append  ("config user group")
         self.FGT_Left_Cli.append  ("edit ssl")
+        self.FGT_Left_Cli.append ("set group-type sslvpn")
         self.FGT_Left_Cli.append  ("set member qa")
         self.FGT_Left_Cli.append  ("set sslvpn-portal "+"v_"+str(i))
         self.FGT_Left_Cli.append  ("end")
