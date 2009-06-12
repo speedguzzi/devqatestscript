@@ -44,7 +44,7 @@ class StressWAD ():
         self.FGT_Left_Cli.append ("end")
         return 0
     def GenSSLVPNSetting (self,i=1) :
-        self.FGT_Left_Cli.append ("config global")
+        self.FGT_Left_Cli.append ("config vdom")
         self.FGT_Left_Cli.append   ("edit v"+str(i))
         self.FGT_Left_Cli.append ("config vpn ssl settings")
         self.FGT_Left_Cli.append   ("set sslv3 enable")
@@ -57,14 +57,14 @@ class StressWAD ():
         self.FGT_Left_Cli.append   ("set tunnel-endip 30.0." + str(i) + ".62")
         self.FGT_Left_Cli.append   ("set tunnel-startip 30.0." + str(i) + ".33")
         self.FGT_Left_Cli.append  ("end")
-        self.FGT_Left_Cli.append ("end")
+#        self.FGT_Left_Cli.append ("end")
         self.FGT_Left_Cli.append ("config vpn ssl web portal")
         self.FGT_Left_Cli.append  ("edit v_"+str(i))
         self.FGT_Left_Cli.append   ("set allow-access web ftp smb telnet ssh")
         self.FGT_Left_Cli.append   ("set page-layout double-column")
         self.FGT_Left_Cli.append  ("config widget")
         self.FGT_Left_Cli.append    ("edit 0")
-        self.FGT_Left_Cli.append     ("set name Tunnel Mode")
+        self.FGT_Left_Cli.append     ('set name "Tunnel Mode"')
         self.FGT_Left_Cli.append     ("set type tunnel")
         self.FGT_Left_Cli.append     ("set tunnel-status enable")
         self.FGT_Left_Cli.append    ("next")
@@ -73,18 +73,19 @@ class StressWAD ():
         self.FGT_Left_Cli.append     ("set allow-apps web")
         self.FGT_Left_Cli.append    ("next")
         self.FGT_Left_Cli.append    ("edit 0")
-        self.FGT_Left_Cli.append     ("set name Connection Tool")
+        self.FGT_Left_Cli.append     ('set name "Connection Tool"')
         self.FGT_Left_Cli.append     ("set type tool")
         self.FGT_Left_Cli.append     ("set column two")
         self.FGT_Left_Cli.append     ("set allow-apps web ftp smb telnet ssh vnc rdp")
         self.FGT_Left_Cli.append    ("next")
         self.FGT_Left_Cli.append    ("edit 0")
-        self.FGT_Left_Cli.append     ("set name Session Information")
+        self.FGT_Left_Cli.append     ('set name "Session Information"')
         self.FGT_Left_Cli.append     ("set type info")
         self.FGT_Left_Cli.append     ("set column two")
         self.FGT_Left_Cli.append    ("next")
-        self.FGT_Left_Cli.append  ("end") 
-        self.FGT_Left_Cli.append ("end") 
+        self.FGT_Left_Cli.append   ("end") #leave config widget
+        self.FGT_Left_Cli.append  ("end") #leave config vpn ssl web portal
+        self.FGT_Left_Cli.append ("end") #leave vdom
         return 0
 
     def GenStaticRoute (self,i=1):
@@ -93,8 +94,8 @@ class StressWAD ():
         self.FGT_Left_Cli.append    ("edit v"+str(i))
         self.FGT_Left_Cli.append  ("config router static")
         self.FGT_Left_Cli.append    ("edit 0")
-        self.FGT_Left_Cli.append    ("set dst 30.0.1.32 "+"255 255.255.224")
-        self.FGT_Left_Cli.append    ("set device "+self.FGT_Left_ServerInterface+"_v"+str(i))
+        self.FGT_Left_Cli.append    ("set dst 30.0."+str(i)+".32 "+"255.255.255.224")
+        self.FGT_Left_Cli.append    ("set device ssl.v"+str(i))
         self.FGT_Left_Cli.append   ("end")     #Leave Static Route mode
         self.FGT_Left_Cli.append  ("end")     #Leave vdom v[N]
         return 0
@@ -123,7 +124,7 @@ class StressWAD ():
         
         # This policy for tunnel mode ssl_vpn traffic
         self.FGT_Left_Cli.append   ("edit 0")
-        self.FGT_Left_Cli.append    ('set srcintf "ssl.v'+str(i))
+        self.FGT_Left_Cli.append    ('set srcintf ssl.v'+str(i))
         self.FGT_Left_Cli.append    ('set dstintf '+self.FGT_Left_ServerInterface+"_v"+str(i))
         self.FGT_Left_Cli.append    ('set srcaddr "all"')
         self.FGT_Left_Cli.append    ('set dstaddr "all"')
@@ -131,6 +132,7 @@ class StressWAD ():
         self.FGT_Left_Cli.append    ('set schedule "always"')
         self.FGT_Left_Cli.append    ('set service "ANY"')
         self.FGT_Left_Cli.append    ('set logtraffic disable')
+        self.FGT_Left_Cli.append    ("set nat enable")
         self.FGT_Left_Cli.append   ("end")
         self.FGT_Left_Cli.append  ("end")
         return 0
@@ -150,7 +152,9 @@ class StressWAD ():
         self.FGT_Left_Cli.append  ("set member qa")
         self.FGT_Left_Cli.append  ("set sslvpn-portal "+"v_"+str(i))
         self.FGT_Left_Cli.append  ("end")
+        self.FGT_Left_Cli.append ("end") #leave vdom
         return 0
+
     def GenAll (self,i):
         self.FGT_Left_Cli = []
         self.GenVdom(i)
@@ -167,14 +171,14 @@ if __name__ == '__main__' :
     #fgt_left.SetDebugLevel()
 
     #fgt_right.SetDebugLevel()
-    fgt_left.DCTelnetDevice_FGT ()
+    #fgt_left.DCTelnetDevice_FGT ()
 
-    print "left ", fgt_left.Err
+    #print "left ", fgt_left.Err
     #fgt_right.DCTelnetDevice_FGT ()
     #print "right", fgt_right.Err 
-    for i in range (1 ,11) :
+    for i in range (1 ,251) :
         a.GenAll(i)
-        print "#" * 10, "Generate Config for FGT" , i
+        print "#" * 10, "Generate Config for FGT Vdom-" , i
         for i in a.FGT_Left_Cli[:] : print i
         #fgt_left.DCUploadCFG_FGT (a.FGT_Left_Cli)
         #print '=' * 70
