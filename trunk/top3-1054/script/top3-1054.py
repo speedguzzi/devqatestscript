@@ -156,8 +156,8 @@ class StressWAD ():
         self.GenVdom(i)
         self.GenVlan(i)
         self.GenStaticRoute (i)
+        self.GenSSLVPNSetting(i)
         self.GenLocalUser(i)
-        self.GenStaticRoute(i)
         self.GenFWPolicy(i)
 
 
