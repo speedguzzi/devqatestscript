@@ -44,7 +44,7 @@ class DC ():
         self.DeviceSerialNumber = "" # FGT, Serial number, 
         self.Device_T =""
         if (platform.uname()[0] != "Linux") :
-            self.DebPrint ("The platform is "+platform.uname[0]+" not fully test on it",0)
+            self.DebPrint ("The platform is "+platform.uname()[0]+" not fully test on it",0)
             
     def DebPrint (self, MSG,DebugLevel=5):
         if (DebugLevel > self.DEBUG) or (self.DEBUG == -1):
