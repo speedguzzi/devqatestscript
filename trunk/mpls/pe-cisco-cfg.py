@@ -23,13 +23,10 @@ class mpls_pe_app():
         self.FGT_Left_Cli.append  ("end")
         return 0
     
-    def GenVlan(self,i=1,option=2):
+    def GenVlan(self,i=1):
         self.FGT_Left_Cli.append ("config sys inter")
         self.FGT_Left_Cli.append ("edit "+self.FGT_Left_ClientInterface + "_c_" +str(i))
-        if (option == 1) :
-            self.FGT_Left_Cli.append        ("set ip 10.1."+str(i)+".254/24")
-        elif (option ==2) :
-            self.FGT_Left_Cli.append ("edit 10.1.1.254")
+        self.FGT_Left_Cli.append ("set ip 10.1."+str(i)+".254/24")
         self.FGT_Left_Cli.append ("set allow http https ping snmp ssh  telnet")
         self.FGT_Left_Cli.append ("set vdom root")
         self.FGT_Left_Cli.append ("set inter "+self.FGT_Left_ClientInterface)
@@ -37,30 +34,24 @@ class mpls_pe_app():
         self.FGT_Left_Cli.append ("end")
         return 0
 
-    def GenBGPRouting (self,i=1,option =1) :
+    def GenBGPRouting (self,i=1) :
         self.FGT_Left_Cli.append ("config router bgp")
         self.FGT_Left_Cli.append   ("set as "+str(i))
         self.FGT_Left_Cli.append   ("config neighbor")
-        if (option == 2) :
-            self.FGT_Left_Cli.append        ("edit 10.1."+str(i)+".1")
-        elif (option ==1) :
-            self.FGT_Left_Cli.append ("edit 10.1.1.1")
+        self.FGT_Left_Cli.append     ("edit 10.1."+str(i) +".1")
         self.FGT_Left_Cli.append       ("set remote-as "+str(i))
         self.FGT_Left_Cli.append     ("end")
         self.FGT_Left_Cli.append   ("set router-id 10.1."+str(i)+".1")
         self.FGT_Left_Cli.append  ("end")
         return 0
 
-    def GenBGPVRFRouting (self,i=1,option=1):
+    def GenBGPVRFRouting (self,i=1):
         # 
         self.FGT_Left_Cli.append  ("config router bgp")
         self.FGT_Left_Cli.append    ("config vrf")
         self.FGT_Left_Cli.append    ("edit vrf-c"+str(i))
         self.FGT_Left_Cli.append      ("config neighbor")
-        if (option == 1) :
-            self.FGT_Left_Cli.append        ("edit 10.1."+str(i)+".1")
-        elif (option ==2) :
-            self.FGT_Left_Cli.append ("edit 10.1.1.1")
+        self.FGT_Left_Cli.append        ("edit 10.1."+str(i)+".1")
         self.FGT_Left_Cli.append          ("set remote-as "+str(i))
         self.FGT_Left_Cli.append      ("end")
         self.FGT_Left_Cli.append    ("end")
@@ -92,10 +83,10 @@ class mpls_pe_app():
     def GenAll (self,i):
         self.FGT_Left_Cli = []
 #       self.GenVdom(i)
-        self.GenVlan(i,2)
+        self.GenVlan(i)
         self.GenVRF (i)
         self.GenRouterInterface(i)
-        self.GenBGPVRFRouting (i,2)
+        self.GenBGPVRFRouting (i)
 #        self.GenStaticRoute (i)
 #        self.GenSSLVPNSetting(i)
 #        self.GenLocalUser(i)
@@ -115,7 +106,7 @@ if __name__ == '__main__' :
     #print "right", fgt_right.Err 
     print "config global"
     print "exec batch start"
-    for i in range (1 ,201) :
+    for i in range (1 ,101) :
         a.GenAll(i)
         print "#" * 10, "Generate Config for FGT Vdom --" , i
         for i in a.FGT_Left_Cli[:] : print i
