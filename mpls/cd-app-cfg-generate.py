@@ -20,11 +20,16 @@ class mpls_ce_app():
         self.FGT_Left_Cli.append  ("end")
         return 0
     
-    def GenVlan(self,i=1):
+    def GenVlan(self,i=1,option=1):
+        #option = 1: Generate specifify subnet for each vlan 
+        #         2: use same subnet for all vlan on client side
         self.FGT_Left_Cli.append ("config global")
         self.FGT_Left_Cli.append ("config sys inter")
         self.FGT_Left_Cli.append ("edit "+self.FGT_Left_ClientInterface + "_c_" +str(i))
-        self.FGT_Left_Cli.append ("set ip 10.1."+str(i)+".1/24")
+        if (option ==1 ) :
+            self.FGT_Left_Cli.append ("set ip 10.1."+str(i)+".1/24")
+        elif (option ==2 ):
+            self.FGT_Left_Cli.append ("set ip 10.1.1.1/24")
         self.FGT_Left_Cli.append ("set allow http https ping snmp ssh  telnet")
         self.FGT_Left_Cli.append ("set vdom c_"+str(i))
         self.FGT_Left_Cli.append ("set inter "+self.FGT_Left_ClientInterface)
@@ -44,13 +49,16 @@ class mpls_ce_app():
         self.FGT_Left_Cli.append ("end")
         return 0
 
-    def GenBGPRouting (self,i=1) :
+    def GenBGPRouting (self,i=1,option=2) :
         self.FGT_Left_Cli.append ("config vdom")
         self.FGT_Left_Cli.append   ("edit c_"+str(i))
         self.FGT_Left_Cli.append ("config router bgp")
         self.FGT_Left_Cli.append   ("set as "+str(i))
         self.FGT_Left_Cli.append   ("config neighbor")
-        self.FGT_Left_Cli.append     ("edit 10.1."+str(i) +".254")
+        if (option == 1) :
+            self.FGT_Left_Cli.append     ("edit 10.1."+str(i) +".254")
+        elif (option ==2) :
+            self.FGT_Left_Cli.append     ("edit 10.1.1.254")
         self.FGT_Left_Cli.append       ("set remote-as 4000")
         self.FGT_Left_Cli.append     ("end")
         self.FGT_Left_Cli.append   ("set router-id 10.1."+str(i)+".1")
@@ -67,6 +75,19 @@ class mpls_ce_app():
         self.FGT_Left_Cli.append  ("end")
         self.FGT_Left_Cli.append ("end") #leave vdom
         return 0
+    def GenLoopbackInterface (self,i=1,option=5):
+        #option = loopback interfae number 5~200
+        if (option < 5 ) : option = 5
+        if (option > 200) : option = 200
+        self.FGT_Left_Cli.append ("config sys global")
+        self.FGT_Left_Cli.append  ("config sys interface ")
+        for j in range (0,option) :
+            self.FGT_Left_Cli.append ("edit c"+str(i)+"_loop_"+str(j+1))
+            self.FGT_Left_Cli.append  ("set type loop")
+            self.FGT_Left_Cli.append  ("set ip 10.0."+str(i)+"."+str(j+1)+"/32")
+            self.FGT_Left_Cli.append  ("set vdom c_"+str(i))
+            self.FGT_Left_Cli.append ("next")
+        self.FGT_Left_Cli.append ("end")
 
     def GenStaticRoute (self,i=1):
         # config static route for ssl-vpn tunnel address
@@ -132,9 +153,10 @@ class mpls_ce_app():
     def GenAll (self,i):
         self.FGT_Left_Cli = []
         self.GenVdom(i)
-        self.GenVlan(i)
+        self.GenVlan(i,2)     # 2 is mean use same ip address on vlan interface
+        self.GenLoopbackInterface (i,10)  # generate 10 loop interface for each vdom
         self.GenStaticRoute(i)
-        self.GenBGPRouting (i)
+        self.GenBGPRouting (i,2)
 #        self.GenStaticRoute (i)
 #        self.GenSSLVPNSetting(i)
 #        self.GenLocalUser(i)
@@ -154,7 +176,7 @@ if __name__ == '__main__' :
     #print "right", fgt_right.Err 
     print "config global"
     print "exec batch start"
-    for i in range (1 ,11) :
+    for i in range (1 ,201) :
         a.GenAll(i)
         print "#" * 10, "Generate Config for FGT Vdom --" , i
         for i in a.FGT_Left_Cli[:] : print i
