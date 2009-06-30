@@ -29,7 +29,7 @@ class mpls_pe_app():
         if (option == 1) :
             self.FGT_Left_Cli.append        ("set ip 10.1."+str(i)+".254/24")
         elif (option ==2) :
-            self.FGT_Left_Cli.append ("edit 10.1.1.254")
+            self.FGT_Left_Cli.append ("set ip 10.1.1.254/24")
         self.FGT_Left_Cli.append ("set allow http https ping snmp ssh  telnet")
         self.FGT_Left_Cli.append ("set vdom root")
         self.FGT_Left_Cli.append ("set inter "+self.FGT_Left_ClientInterface)
@@ -82,7 +82,7 @@ class mpls_pe_app():
         self.FGT_Left_Cli.append  ('set descript "for Customer '+str (i)+ '"')
         self.FGT_Left_Cli.append  ('set rd 1:'+str(i))
         self.FGT_Left_Cli.append  ("config route-target ")
-        self.FGT_Left_Cli.append   ("edit 0")
+        self.FGT_Left_Cli.append   ("edit 1")
         self.FGT_Left_Cli.append     ("set import-export both")
         self.FGT_Left_Cli.append     ("set rt 1:"+str(i))
         self.FGT_Left_Cli.append   ("end")
