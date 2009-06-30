@@ -60,6 +60,12 @@ class mpls_ce_app():
         elif (option ==2) :
             self.FGT_Left_Cli.append     ("edit 10.1.1.254")
         self.FGT_Left_Cli.append       ("set remote-as 4000")
+        self.FGT_Left_Cli.append ("next")
+        if (option == 1) :
+            self.FGT_Left_Cli.append     ("edit 10.1."+str(i) +".254")
+        elif (option ==2) :
+            self.FGT_Left_Cli.append     ("edit 10.1.1.253")
+        self.FGT_Left_Cli.append       ("set remote-as 4000")
         self.FGT_Left_Cli.append     ("end")
         self.FGT_Left_Cli.append   ("set router-id 10.1."+str(i)+".1")
         self.FGT_Left_Cli.append   ("config network")
@@ -79,7 +85,7 @@ class mpls_ce_app():
         #option = loopback interfae number 5~200
         if (option < 5 ) : option = 5
         if (option > 200) : option = 200
-        self.FGT_Left_Cli.append ("config sys global")
+        self.FGT_Left_Cli.append ("config global")
         self.FGT_Left_Cli.append  ("config sys interface ")
         for j in range (0,option) :
             self.FGT_Left_Cli.append ("edit c"+str(i)+"_loop_"+str(j+1))
@@ -87,8 +93,8 @@ class mpls_ce_app():
             self.FGT_Left_Cli.append  ("set ip 10.0."+str(i)+"."+str(j+1)+"/32")
             self.FGT_Left_Cli.append  ("set vdom c_"+str(i))
             self.FGT_Left_Cli.append ("next")
-        self.FGT_Left_Cli.append ("end")
-
+        self.FGT_Left_Cli.append ("end")  # leave config sys inter
+        self.FGT_Left_Cli.append ("end") # leave global
     def GenStaticRoute (self,i=1):
         # config static route for ssl-vpn tunnel address
         self.FGT_Left_Cli.append  ("config vdom")

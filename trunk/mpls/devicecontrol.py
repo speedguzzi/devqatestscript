@@ -110,11 +110,11 @@ class DC ():
         ts.close()
         return 0 #OK
 
-    def DCTelnetDevice_Router(self,IP):
-        self.DebPrint (IP,1)
+    def DCTelnetDevice_Router(self):
+        self.DebPrint (self.DeviceIP,1)
         try :
-            T=telnetlib.Telnet(IP)
-            L=T.read_until('#',15)
+            self.Device_T=telnetlib.Telnet(self.DeviceIP)
+            L=self.Device_T.read_until('#',15)
             self.DebPrint ( L,3)
         except socket.error,socket.connect:
             self.Err=2
@@ -125,7 +125,7 @@ class DC ():
             self.DebPrint ( "Router Close Telnet",1)
             return 2
         self.Err=0
-        return T
+        return self.Err
 
     def DCTelnetDeviceConsole_Router (self,Console) :
         temp = Console.split(':')
@@ -135,9 +135,9 @@ class DC ():
         while (1) :                         # Try to connect , if fail, call clear TS line
             try :
                 if (len(temp) ==3) :
-                    T=telnetlib.Telnet(temp[1],temp[2])
+                    self.Device_T=telnetlib.Telnet(temp[1],temp[2])
                 elif (len(temp) ==2) :
-                    T=telnetlib.Telnet(temp[1])
+                    self.Device_T=telnetlib.Telnet(temp[1])
                 else :
                     self.DebPrint ( "Config file may error"+Console,2)
                     self.Err=100 # can't run ,
@@ -148,23 +148,23 @@ class DC ():
                 self.DebPrint ( "Clear TS Line Done, try again",1)
                 continue
             break
-        T.write("\n")
-        T.write("\n")
+        self.Device_T.write("\n")
+        self.Device_T.write("\n")
         while (1) :                         # Try to reach FGT Login: , If Not, then send exit and end, then try again
             line=T.read_until(">",5)
             m=re.search('>$',line)
             if m :
                 self.DebPrint("Match Login Phase:"+line, 2)
-                T.write("en\n")
+                self.Device_T.write("en\n")
  # Not support en with password           T.read_until("Password: ",10)
  #           T.write("\n")
                 break
             else :
                 self.DebPrint ("not match login phase, will send end:"+line, 2)
-                T.write("exit\n")
-                T.write("end\n")
+                self.Device_T.write("exit\n")
+                self.Device_T.write("end\n")
         self.Err=0
-        return T
+        return self.Err
 
     def DCTelnetDevice_Windows(self,IP):
         self.DebPrint ( "Connect to Windows "+IP)
@@ -302,7 +302,7 @@ class DC ():
         Lines.close()
     
 
-    def DCUploadCFG_Router(self,T,CLI,Prompt="#"):
+    def DCUploadCFG_Router(self,CLI,Prompt="#"):
         """
     DCUploadCFG_Router(T,CLI,Prompt)
     T := telnetlib.Telnet session to FGT
@@ -310,13 +310,13 @@ class DC ():
     Prompt := default use "#", will .read_until(Prompt,15) for each CLI
     """
         self.Err=0
-        self.DebPrint ( T.host+" "+CLI[0])
-        if not T.sock_avail() :
+        #self.DebPrint ( type (T) +" "+CLI[0])
+        if self.Device_T.sock_avail() :
             self.DebPrint ("It's not a live Telnet Session")
         try :
             for C in CLI[:] :
-                T.write (C+"\n")
-                L=T.read_until (Prompt,15)
+                self.Device_T.write (C+"\n")
+                L=self.Device_T.read_until (Prompt,15)
                 self.DebPrint (L)
         except socket.error, socket.connect :
             self.Err=1
