@@ -82,17 +82,26 @@ class mpls_ce_app():
         self.FGT_Left_Cli.append ("end") #leave vdom
         return 0
     def GenLoopbackInterface (self,i=1,option=5):
-        #option = loopback interfae number 5~200
-        if (option < 5 ) : option = 5
-        if (option > 200) : option = 200
+        #this function will modify to use interface loop_cN, then config
+        #secondary IP
+        
+        #option = loopback interfae number 1~32 , because limit on secondary ip
+        if (option < 1 ) : option = 1
+        if (option > 32) : option = 32
         self.FGT_Left_Cli.append ("config global")
         self.FGT_Left_Cli.append  ("config sys interface ")
-        for j in range (0,option) :
-            self.FGT_Left_Cli.append ("edit c"+str(i)+"_loop_"+str(j+1))
-            self.FGT_Left_Cli.append  ("set type loop")
+        self.FGT_Left_Cli.append  ("edit loop_c"+str(i))
+        self.FGT_Left_Cli.append  ("set type loop")
+        self.FGT_Left_Cli.append  ("set vdom c_"+str(i))
+        self.FGT_Left_Cli.append  ("set allowaccess ssh https http ping snmp telnet")
+        self.FGT_Left_Cli.append  ("set ip 10.0."+str(i)+".1/32")
+        self.FGT_Left_Cli.append  ("config  secondaryip")
+        for j in range (1,option) :
+            self.FGT_Left_Cli.append ("edit "+str(j))
+            self.FGT_Left_Cli.append  ("set allowaccess ssh https http ping snmp telnet")
             self.FGT_Left_Cli.append  ("set ip 10.0."+str(i)+"."+str(j+1)+"/32")
-            self.FGT_Left_Cli.append  ("set vdom c_"+str(i))
             self.FGT_Left_Cli.append ("next")
+        self.FGT_Left_Cli.append ("end")   # leave interface --> secondary mode
         self.FGT_Left_Cli.append ("end")  # leave config sys inter
         self.FGT_Left_Cli.append ("end") # leave global
     def GenStaticRoute (self,i=1):
@@ -110,11 +119,10 @@ class mpls_ce_app():
     
     
     def GenFWPolicy (self,i=1):
-        # This policy is for web-mode ssl vpn 
         self.FGT_Left_Cli.append ("config vdom")
         self.FGT_Left_Cli.append   ("edit c_"+str(i))
         self.FGT_Left_Cli.append ("config fire policy")
-        self.FGT_Left_Cli.append  ("edit 0")
+        self.FGT_Left_Cli.append  ("edit 5")
         self.FGT_Left_Cli.append   ('set srcintf '+self.FGT_Left_ClientInterface+"_c_"+str(i))
         self.FGT_Left_Cli.append   ('set dstintf '+self.FGT_Left_ServerInterface+"_c_"+str(i))
         self.FGT_Left_Cli.append   ('set srcaddr "all"')
@@ -122,10 +130,9 @@ class mpls_ce_app():
         self.FGT_Left_Cli.append    ('set service "ANY"')
         self.FGT_Left_Cli.append    ('set schedule "always"')
         self.FGT_Left_Cli.append   ("set action accept")
-        self.FGT_Left_Cli.append  ("next")
-        
-        # This policy for tunnel mode ssl_vpn traffic
-        self.FGT_Left_Cli.append   ("edit 0")
+        self.FGT_Left_Cli.append  ("next")        
+        # This policy for 
+        self.FGT_Left_Cli.append   ("edit 6")
         self.FGT_Left_Cli.append    ('set dstintf '+self.FGT_Left_ClientInterface+"_c_"+str(i))
         self.FGT_Left_Cli.append    ('set srcintf '+self.FGT_Left_ServerInterface+"_c_"+str(i))
         self.FGT_Left_Cli.append    ('set srcaddr "all"')
@@ -134,6 +141,18 @@ class mpls_ce_app():
         self.FGT_Left_Cli.append    ('set schedule "always"')
         self.FGT_Left_Cli.append    ('set service "ANY"')
         self.FGT_Left_Cli.append    ('set logtraffic disable')
+        self.FGT_Left_Cli.append  ("next")
+        # Below policy is for loop back interface
+        self.FGT_Left_Cli.append   ("edit 6")
+        self.FGT_Left_Cli.append    ('set srcintf '+self.FGT_Left_ClientInterface+"_c_"+str(i))
+        self.FGT_Left_Cli.append    ('set dstintf loop_c'+str(i))
+        self.FGT_Left_Cli.append    ('set srcaddr "all"')
+        self.FGT_Left_Cli.append    ('set dstaddr "all"')
+        self.FGT_Left_Cli.append    ("set action accept")
+        self.FGT_Left_Cli.append    ('set schedule "always"')
+        self.FGT_Left_Cli.append    ('set service "ANY"')
+        self.FGT_Left_Cli.append    ('set logtraffic disable')
+        self.FGT_Left_Cli.append  ("next")
         self.FGT_Left_Cli.append   ("end")
         self.FGT_Left_Cli.append  ("end")
         return 0

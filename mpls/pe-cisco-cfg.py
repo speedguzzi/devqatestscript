@@ -9,7 +9,8 @@ import os, sys, time
 from devicecontrol import DC
 class mpls_pe_app():
     def __init__ (self):
-        self.FGT_Left = "10.10.10.4"
+        #self.FGT_Left = "10.10.10.4"
+        self.FGT_Left = "10.10.10.5"
         self.FGT_Left_Username = "admin"
         self.FGT_Left_Password = ""
         self.Debug = 5
@@ -29,7 +30,11 @@ class mpls_pe_app():
         self.FGT_Left_Cli.append ("config t")
         self.FGT_Left_Cli.append ("inter loop "+str(i))
         self.FGT_Left_Cli.append ("ip vrf forw vrf-c"+str(i))
-        self.FGT_Left_Cli.append ("ip add 10.4."+str(i)+".2 255.255.255.255")
+        #Below is for R4 PE-CE vrf
+        #self.FGT_Left_Cli.append ("ip add 10.4."+str(i)+".2 255.255.255.255")
+        
+        #Below is for R5 PE-CE vrf
+        self.FGT_Left_Cli.append ("ip add 10.5."+str(i)+".2 255.255.255.255")
         self.FGT_Left_Cli.append ("end")
         return 0
 
@@ -87,7 +92,8 @@ class mpls_pe_app():
 
 if __name__ == '__main__' :
     a = mpls_pe_app ()
-    a.SetDeviceLeftMGMTIP ("10.10.10.4")  # set FGT IP 
+#    a.SetDeviceLeftMGMTIP ("10.10.10.4")  # set Device IP 
+    a.SetDeviceLeftMGMTIP ("10.10.10.5")  # set Device IP 
     fgt_left = DC (a.FGT_Left,  "cisco_router")
     fgt_left.SetDebugLevel(0)
 
