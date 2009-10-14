@@ -1,0 +1,62 @@
+#
+# This device configuration supports DLI EPCR/LPC
+# Ethernet Power Controllers via the 'UU' utility.
+#
+# http://www.webpowerswitch.com/
+# support@digital-loggers.com
+#
+
+specification "dli-lpc" {
+	timeout  	10
+
+	plug name { "1" "2" "3" "4" "5" "6" "7" "8" }
+
+	script login {
+		expect "UU> "
+	}
+	script logout {
+		send "quit\r"
+	}
+	script status_all {
+		send "status\r"
+                expect "status\r\n"
+		foreachplug {
+			expect "([1-8])[[:space:]]+(ON|OFF)\r\n"
+			setplugstate $1 $2 on="ON" off="OFF"
+		}
+		expect "[[:space:]]+\\[OK\\]\r\n"
+		expect "UU> "
+	}
+        script status {
+                send "%sstatus\r"
+                expect "[1-8]?status\r\n"
+		expect "([1-8])[[:space:]]+(ON|OFF)\r\n"
+		setplugstate $1 $2 on="ON" off="OFF"
+		expect "[[:space:]]+\\[OK\\]\r\n"
+		expect "UU> "
+        }
+	script on {
+		send "%son\r"
+		expect "UU> "
+	}
+	script on_all {
+		send "on\r"
+		expect "UU> "
+	}
+	script off {
+		send "%soff\r"
+		expect "UU> "
+	}
+	script off_all {
+		send "off\r"
+		expect "UU> "
+	}
+	script cycle {
+		send "%spulse\r"
+		expect "UU> "
+	}
+	script cycle_all {
+		send "pulse\r"
+		expect "UU> "
+	}
+}
