@@ -1,0 +1,13 @@
+#
+## $1 : PC Dut-Interface
+
+#
+## Create two loop back interface on host pc
+## 	depend "tunctl"
+
+tunctl -t t0 
+tunctl -t t1
+ifconfig t0 13.3.3.3/24 up
+ifconfig t1 14.4.4.4/24 up
+
+
