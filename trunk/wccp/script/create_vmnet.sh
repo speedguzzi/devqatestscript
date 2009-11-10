@@ -9,5 +9,5 @@ rm -rf /dev/vmnet$1
 # create vmnet
 mknod -m 600 /dev/vmnet$1 c 119 $1
 
-/usr/bin/vmnet-bridge -d /var/runvmnet-bridge-${1}.pid /dev/vmnet${1} $2
+/usr/bin/vmnet-bridge -d /var/run/vmnet-bridge-${1}.pid /dev/vmnet${1} $2
 

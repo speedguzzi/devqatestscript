@@ -9,5 +9,15 @@ tunctl -t t0
 tunctl -t t1
 ifconfig t0 13.3.3.3/24 up
 ifconfig t1 14.4.4.4/24 up
+./create_vmnet.sh 10 t0
+./create_vmnet.sh 11 t1 
 
+#
+## Creat two vlan interface on pc_left_eth
+vconfig add ${1} 100
+vconfig add ${1} 200
+ifconfig ${1}.100 up
+ifconfig ${1}.200 up
 
+./create_vmnet.sh 12 ${1}.100
+./create_vmnet.sh 13 ${1}.200 
