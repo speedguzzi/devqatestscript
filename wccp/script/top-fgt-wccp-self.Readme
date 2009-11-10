@@ -1,0 +1,92 @@
+Setup Step: 
+1) FGT create two vdom
+	wccp-r
+	wccp-c
+  CLI:
+config sys global
+	set vdom enable
+end
+y
+[LOGIN]
+c v
+	ed wccp-r
+next
+	ed wccp-c
+	config sys setting	
+		set wccp-cache-engine enable
+	end
+end
+
+2) Assign $Loop1 into wccp-r; $Loop2 into wccp-c
+	loop1 192.168.13.1/24
+	loop2 192.168.13.2/24
+  CLI:
+c g
+config sys inter
+ed $Loop1
+	set vdom wccp-r
+	set ip 192.168.13.1/24
+	set allowaccess  http https ping  snmp ssh telnet
+	set wccp enable
+next
+ed $TestInterface
+	set vdom wccp-r
+
+ed $Loop2
+	set vdom wccp-c
+	set ip 192.168.13.2/24
+	set allowaccess  http https ping  snmp ssh telnet
+	set wccp enable
+end
+
+Verify:
+================
+c g
+dia test app wccp 2
+vdom-wccp-c: work mode:cache working NAT first_phy_id=6
+  interface list:
+    intf=port7, gid=6 phy_id=6
+  service list:
+vdom-root: work mode:router working NAT first_phy_id=22
+  interface list:
+    intf=port5, gid=2 phy_id=2
+    intf=p2-301, gid=22 phy_id=22
+  service list:
+
+3) Create two vlan on TestInterface v100 for ClientPC, v200 for Server
+
+
+CLI:
+config sys inter 
+    edit "wccpr-v100"
+        set vdom "wccp-r"
+        set ip 10.1.1.1 255.255.255.0
+        set allowaccess ping https ssh snmp http telnet
+        set interface "port5"		# TestInterface
+        set vlanid 100
+    next
+    edit "wccp4-v200"
+        set vdom "wccp-r"
+        set ip 10.2.2.1 255.255.255.0
+        set allowaccess ping https ssh snmp http telnet
+        set interface "port5"		# TestInterface
+        set vlanid 200
+    next
+end
+
+4) Create two vlan on PC and assign to vmnet10(vlan100 for client)
+vmnet20(vlan200 for server)
+CLI:
+
+vconfig add eth3 100
+vconfig add eth3 200
+ifconfig eth3.100 up
+ifconfig eth3.200 up
+# remove /dev/vmnetX
+rm -rf /dev/vmnet10
+rm -rf /dev/vmnet20
+mknod /dev/vmnet10 c 119 10
+mknod /dev/vmnet20 c 119 20
+/usr/bin/vmnet-bridge -d /var/run/vmnet-bridge-10.pid /dev/vmnet10.pid eth3.100 
+/usr/bin/vmnet-bridge -d /var/run/vmnet-bridge-20.pid /dev/vmnet20.pid eth3.200
+
