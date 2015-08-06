@@ -1,0 +1,1 @@
+That's a framework , write by python , running on linux platform , can be easy to create test case .
